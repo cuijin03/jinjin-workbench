@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="瑾瑾工作台">
@@ -77,6 +80,15 @@ body::after {
   padding-bottom: 30px;
 }
 
+/* 页面容器 - 确保无顶部空白 */
+#pages-container {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+}
+
 /* ===== 首页布局 ===== */
 .home-header {
   padding: 20px 18px 12px;
@@ -91,7 +103,7 @@ body::after {
   margin-bottom: 4px;
   text-shadow: 1px 1px 3px rgba(255,183,197,0.3);
 }
-.app-title .jin { color: var(--yellow); }
+.app-title .jin { color: var(--pink-deep); }
 .app-subtitle {
   font-size: 12px;
   color: var(--text-light);
@@ -216,27 +228,25 @@ body::after {
   line-height: 1.7;
 }
 
-/* 装饰贴纸区 */
+/* 装饰贴纸区 - 散乱分布 */
 .sticker-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 16px 20px;
+  position: relative;
+  height: 90px;
+  padding: 8px 16px;
   margin: 8px 16px;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 .sticker-item {
-  font-size: 32px;
+  position: absolute;
   filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
   transition: transform 0.3s;
   cursor: pointer;
 }
-.sticker-item:hover { transform: scale(1.2) rotate(5deg); }
+.sticker-item:hover { transform: scale(1.2) rotate(10deg); }
 .sticker-item:nth-child(odd) { animation: float 3s ease-in-out infinite; }
 .sticker-item:nth-child(even) { animation: float 3s ease-in-out infinite 1.5s; }
 @keyframes float {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
 }
 
 /* 快捷入口网格 */
@@ -289,15 +299,27 @@ body::after {
   padding: 10px 20px 20px;
   border-bottom: 2px dashed var(--pink-light);
 }
-.drawer-header .logo { font-size: 36px; }
+.drawer-header .logo {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 8px;
+  border: 3px solid var(--pink-main);
+  box-shadow: 0 4px 12px rgba(255, 194, 203, 0.3);
+}
+.drawer-header .logo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .drawer-header .title { font-size: 20px; color: var(--pink-deep); font-weight: 700; margin-top: 4px; }
 .drawer-header .sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
 
 .drawer-section { padding: 16px 16px 8px; }
 .drawer-section-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--yellow);
+  color: var(--pink-deep);
   letter-spacing: 2px;
   margin-bottom: 12px;
   display: flex;
@@ -308,7 +330,7 @@ body::after {
   content: '';
   flex: 1;
   height: 2px;
-  background: linear-gradient(90deg, var(--yellow-light), transparent);
+  background: linear-gradient(90deg, var(--pink-light), transparent);
   border-radius: 2px;
 }
 
@@ -339,9 +361,9 @@ body::after {
 /* 菜单按钮 */
 .menu-toggle {
   position: fixed;
-  top: 16px; left: 16px;
+  top: 12px; left: 12px;
   z-index: 997;
-  width: 44px; height: 44px;
+  width: 40px; height: 40px;
   border-radius: 50%;
   background: var(--card-bg);
   border: 2px solid var(--pink-light);
@@ -350,7 +372,7 @@ body::after {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 18px;
   transition: all 0.2s;
 }
 .menu-toggle:hover { background: var(--pink-light); }
@@ -358,19 +380,35 @@ body::after {
 /* ===== 页面通用样式 ===== */
 .page {
   display: none;
-  padding: 64px 16px 30px;
+  padding: 0 16px 20px;
   min-height: 100vh;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.2s ease;
 }
-.page.active { display: block; }
-@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+.page.active {
+  display: block;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: linear-gradient(160deg, #FFE4E9 0%, #FFF0E8 50%, #FFF5E8 100%);
+  z-index: 100;
+  padding-top: 56px;
+}
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 
 .page-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
-  padding: 0 4px;
+  margin-bottom: 10px;
+  padding: 8px 4px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #FFF5E8;
+  z-index: 110;
+  padding-left: 60px;
+  padding-right: 16px;
+  box-shadow: 0 2px 8px rgba(200,160,165,0.1);
 }
 .back-btn {
   width: 36px; height: 36px;
@@ -736,9 +774,9 @@ label.field-label:first-child { margin-top: 0; }
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
-    <div class="logo">🐟</div>
+    <div class="logo"><img src="icon.png" alt="瑾瑾工作台"></div>
     <div class="title">瑾瑾的工作台</div>
-    <div class="sub">怀瑾握瑜 · 上岸锦鲤</div>
+    <div class="sub">怀瑾握瑜 · 2027河南省考上岸</div>
   </div>
   <div class="drawer-section">
     <div class="drawer-section-title">📚 学习专区</div>
@@ -781,27 +819,35 @@ label.field-label:first-child { margin-top: 0; }
 
     <div class="slogan-card">
       <div class="slogan-label">✨ 今日标语</div>
-      <div class="slogan-text" id="sloganText">点击设置今日标语</div>
+      <div class="slogan-text" id="sloganText">加载中...</div>
       <div class="slogan-actions">
-        <button class="slogan-btn" onclick="setSlogan()">更换文案</button>
-        <button class="slogan-btn" onclick="viewSloganHistory()">历史记录</button>
+        <button class="slogan-btn" onclick="changeSlogan()">换一句</button>
       </div>
     </div>
 
     <div class="motto-card">
-      <div class="motto-label">🏅 河南省考每日励志</div>
-      <div class="motto-text" id="mottoText">加载中...</div>
+      <div class="motto-label">📋 每日任务</div>
+      <div class="motto-text" id="dailyTask">点击设置今日任务</div>
+      <div class="slogan-actions" style="margin-top:10px;">
+        <button class="slogan-btn" onclick="setDailyTask()">设置任务</button>
+        <button class="slogan-btn" onclick="viewTaskHistory()">历史记录</button>
+      </div>
+    </div>
+
+    <div class="motto-card" style="background:linear-gradient(135deg,var(--blue-light),var(--pink-light));cursor:pointer;" onclick="openPage('qiushi')">
+      <div class="motto-label" style="color:var(--blue);">📖 最新一期《求是》杂志</div>
+      <div class="motto-text" id="qiushiLatest">点击查看最新一期 →</div>
     </div>
 
     <div class="sticker-bar">
-      <span class="sticker-item" title="上岸锦鲤">🐟</span>
-      <span class="sticker-item" title="蝴蝶结">🎀</span>
-      <span class="sticker-item" title="书本">📚</span>
-      <span class="sticker-item" title="铅笔">✏️</span>
-      <span class="sticker-item" title="游泳圈">🛟</span>
-      <span class="sticker-item" title="体重秤">⚖️</span>
-      <span class="sticker-item" title="星星">⭐</span>
-      <span class="sticker-item" title="月亮">🌙</span>
+      <span class="sticker-item" style="font-size:28px;top:5px;left:10%;" title="蝴蝶结">🎀</span>
+      <span class="sticker-item" style="font-size:24px;top:30px;left:55%;" title="书本">📚</span>
+      <span class="sticker-item" style="font-size:30px;top:50px;left:25%;" title="铅笔">✏️</span>
+      <span class="sticker-item" style="font-size:26px;top:15px;left:75%;" title="星星">⭐</span>
+      <span class="sticker-item" style="font-size:22px;top:45px;left:80%;" title="月亮">🌙</span>
+      <span class="sticker-item" style="font-size:25px;top:60px;left:5%;" title="花朵">🌸</span>
+      <span class="sticker-item" style="font-size:27px;top:25px;left:40%;" title="爱心">💕</span>
+      <span class="sticker-item" style="font-size:23px;top:55px;left:60%;" title="糖果">🍬</span>
     </div>
 
     <div class="quick-grid">
@@ -856,77 +902,395 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ========== 河南省考每日励志 ==========
-const mottos = [
-  "乾坤未定，你我皆是黑马。河南省考，一举上岸！",
-  "每天进步一点点，上岸锦鲤就在前方等你。",
-  "行测刷题千遍，其义自见；申论练笔万次，下笔有神。",
-  "河南学子多奇志，公考路上不言弃。",
-  "今日的汗水，是明日上岸的通行证。",
-  "中原大地任驰骋，公务员梦终成真。",
-  "别人刷的是手机，你刷的是真题——这就是差距。",
-  "言语判断资料数量常识，五大模块逐一击破。",
-  "申论不是玄学，是逻辑与积累的艺术。",
-  "凌晨的灯不会白亮，清晨的书不会白读。",
-  "省考路上没有捷径，每一步都算数。",
-  "把每一次模考当作实战，把实战当作模考。",
-  "与其羡慕别人上岸，不如自己埋头苦干。",
-  "申论踩分靠的是关键词，上岸靠的是每一天。",
-  "错题本是你的宝藏，反复看才能不丢分。",
-  "时政热点日日积累，考场上方有话可说。",
-  "专注当下的一题一书，未来自会给你答案。",
-  "备考如登山，坚持到顶峰的人才能看到日出。",
-  "今日不努力刷题，明日努力找工作。",
-  "行测时间不够？练的就是速度与准确率的平衡。",
-  "申论大作文立意要高，落笔要实。",
-  "公考不是比谁聪明，是比谁能坚持到最后。",
-  "豫见公考，遇见更好的自己。",
-  "每一次模拟都是进步，每一次错题都是收获。",
-  "星光不问赶路人，时光不负有心人。",
-  "做足准备，静待花开。2027河南省考，瑾瑾必上岸！"
-];
-function getDailyMotto() {
-  const day = Math.floor(Date.now() / 86400000);
-  return mottos[day % mottos.length];
-}
-document.getElementById('mottoText').textContent = getDailyMotto();
-
-// ========== 标语栏 ==========
-function loadSlogan() {
+// ========== 每日任务 ==========
+function loadDailyTask() {
   const today = new Date().toDateString();
-  const data = DB.get('slogan', {date:'', text:''});
+  const data = DB.get('dailyTask', {date:'', text:''});
   if (data.date === today && data.text) {
-    document.getElementById('sloganText').textContent = data.text;
+    document.getElementById('dailyTask').textContent = data.text;
   } else {
-    document.getElementById('sloganText').textContent = '点击「更换文案」设置今日标语';
+    document.getElementById('dailyTask').textContent = '点击「设置任务」添加今日任务';
   }
 }
-loadSlogan();
+loadDailyTask();
 
-function setSlogan() {
-  const text = prompt('请输入今日标语：', document.getElementById('sloganText').textContent === '点击「更换文案」设置今日标语' ? '' : document.getElementById('sloganText').textContent);
+function setDailyTask() {
+  const current = document.getElementById('dailyTask').textContent;
+  const placeholder = '点击「设置任务」添加今日任务';
+  const text = prompt('请输入今日任务（可用换行写多个）：', current === placeholder ? '' : current);
   if (text !== null && text.trim()) {
     const today = new Date().toDateString();
-    let history = DB.get('sloganHistory', []);
+    let history = DB.get('taskHistory', []);
     history.unshift({date: today, text: text.trim()});
     if (history.length > 100) history = history.slice(0, 100);
-    DB.set('sloganHistory', history);
-    DB.set('slogan', {date: today, text: text.trim()});
-    document.getElementById('sloganText').textContent = text.trim();
-    toast('标语已更新 ✨');
+    DB.set('taskHistory', history);
+    DB.set('dailyTask', {date: today, text: text.trim()});
+    document.getElementById('dailyTask').textContent = text.trim();
+    toast('任务已更新 📋');
   }
 }
 
-function viewSloganHistory() {
-  const history = DB.get('sloganHistory', []);
+function viewTaskHistory() {
+  const history = DB.get('taskHistory', []);
   if (history.length === 0) { toast('暂无历史记录'); return; }
-  let html = '<div class="modal-title">📜 标语历史</div>';
+  let html = '<div class="modal-title">📜 任务历史</div>';
   history.forEach(h => {
     const d = new Date(h.date);
     html += `<div style="padding:10px;border-bottom:1px dashed var(--pink-light);font-size:13px;"><div style="color:var(--text-light);font-size:11px;">${d.getMonth()+1}月${d.getDate()}日</div><div>${h.text}</div></div>`;
   });
   html += '<div class="modal-actions"><button class="btn" onclick="closeModal()">关闭</button></div>';
   showModal(html);
+}
+
+// ========== 标语栏（自动弹出每日励志）==========
+const dailySlogans = [
+  "挡在你面前的，只有你自己。",
+  "灵魂的欲望，是命运的先知。",
+  "渴望，那就全力以赴。",
+  "你当像鸟飞往你的山。",
+  "所有的努力都不会完全白费，你付出的每一步都在塑造更好的你。",
+  "人生没有白走的路，每一步都算数。",
+  "你现在的气质里，藏着你走过的路、读过的书和爱过的人。",
+  "世界上只有一种英雄主义，就是认清生活的真相后依然热爱生活。",
+  "愿你成为自己的太阳，无需凭借谁的光。",
+  "你不必生来勇敢，天赋过人，只要能投入，肯坚持。",
+  "所谓万丈深渊，下去，也是前程万里。",
+  "生活不会因为你是女生就对你手下留情，你要自己强大。",
+  "你的孤独，虽败犹荣。",
+  "我们一路奋战，不是为了改变世界，而是为了不让世界改变我们。",
+  "人这一生早晚会遭遇摧毁，重建。能重建自己的人，才是真正的强者。",
+  "所有的闪闪发光，都是在暗处默默努力的结果。",
+  "你只管努力，剩下的交给时间。",
+  "当你穿过了暴风雨，你就不再是原来那个人了。",
+  "你不必去讨好所有人，你只需要成为你自己。",
+  "每一个不曾起舞的日子，都是对生命的辜负。",
+  "心若没有栖息的地方，到哪里都是流浪。",
+  "你要相信，你生命里遇到的每个人每件事，都有它的意义。",
+  "成长就是把哭泣调成了静音模式。",
+  "你的人生不会辜负你的每一份努力，那些转错的弯，那些流过的泪，全都让你成为独一无二的自己。",
+  "与其在意别人的背弃和不善，不如经营自己的尊严和美好。",
+  "愿你有前进一寸的勇气，亦有后退一尺的从容。",
+  "你是什么样的人，就会吸引什么样的人。",
+  "不要因为没有掌声，就放弃自己的梦想。",
+  "你受的苦，吃过的亏，担的责，扛的罪，忍的痛，到最后都会变成光，照亮你的路。",
+  "种一棵树最好的时间是十年前，其次是现在。",
+  "你不必仰望别人，自己亦是风景。",
+  "每个人身上都有太阳，主要是如何让它发光。",
+  "你可以不完美，但不能不努力。",
+  "当你觉得晚了的时候，恰恰是最早的时候。",
+  "命运给你一个比别人低的起点，是想告诉你，让你用一生去奋斗出一个绝地反击的故事。",
+  "没有人能替你承受痛苦，也没有人能拿走你的坚强。",
+  "你今天的努力，是幸运的伏笔。",
+  "不要在该奋斗的年纪选择安逸。",
+  "你必须很努力，才能看起来毫不费力。",
+  "所有的闪闪发光，都是厚积薄发。",
+  "你不必焦虑，只需专注当下，时间会给你答案。",
+  "人生最重要的不是所站的位置，而是所朝的方向。",
+  "你的坚持，终将美好。",
+  "做自己的女王，不卑不亢，不慌不忙。",
+  "人生就像骑自行车，要想保持平衡，就必须不断前进。",
+  "你不能延长生命的长度，但可以拓展它的宽度。",
+  "别人的眼光不重要，你自己的选择才重要。",
+  "没有人能让你自卑，除非你自己同意。",
+  "你的人生，不要输给心情。",
+  "真正的强大，不是原谅别人，而是放过自己。",
+  "愿你历尽千帆，归来仍是少年。",
+  "你若盛开，蝴蝶自来；你若精彩，天自安排。",
+  "生活明朗，万物可爱，人间值得，未来可期。",
+  "愿你成为自己喜欢的样子，不抱怨，不将就，有自由，有光芒。",
+  "所有的美好，都值得等待。",
+  "你不必羡慕别人，你本身就是风景。",
+  "人生没有标准答案，只有自己的答案。",
+  "愿你的眼里有光，心里有爱，脚下有路。",
+  "不是所有的坚持都有结果，但总有一些坚持，能从冰封的土地里，培育出十万朵怒放的蔷薇。",
+  "你的善良，必须有点锋芒。",
+  "世界上最快乐的事，莫过于为理想而奋斗。",
+  "你必须只有内心丰富，才能摆脱这些生活表面的相似。",
+  "生命中真正重要的不是你遭遇了什么，而是你记住了哪些事，又是如何铭记的。",
+  "不要因为走得太远，而忘记为什么出发。",
+  "成熟不是为了走向复杂，而是为了抵达天真。",
+  "愿你这一生，既有软肋，也有盔甲。",
+  "人生没有如果，只有后果和结果。",
+  "真正的自由，不是想做什么就做什么，而是不想做什么就可以不做什么。",
+  "你的未来，藏在你的现在里。",
+  "所有的失去，都会以另一种方式归来。",
+  "你若不勇敢，谁替你坚强。",
+  "人生最大的遗憾，不是失败，而是我本可以。",
+  "你的努力，必须配得上你的野心。",
+  "没有人能回到过去重新开始，但谁都可以从今天开始。",
+  "你不必羡慕别人拥有的，因为你也会拥有别人羡慕的。",
+  "你的独立，是你最大的底气。",
+  "所有的经历，都是成长；所有的过往，都是序章。",
+  "你不必急于求成，只需稳扎稳打。",
+  "愿你的善良，自带锋芒；愿你的温柔，也有力量。",
+  "不是井里没有水，而是你挖的不够深。",
+  "你不必跟别人比，你只需要跟昨天的自己比。",
+  "人生最可怕的不是失败，而是你从未尝试。",
+  "你的态度，决定你的高度。",
+  "所有的成功，都来自不倦的努力和奔跑。",
+  "愿你既有乘风破浪的勇气，也有随遇而安的从容。",
+  "你不必活成别人期待的样子，你只需要活成自己喜欢的样子。",
+  "所有的磨难，都是成长的礼物。",
+  "你的选择，决定你成为什么样的人。",
+  "不是所有的鱼都生活在同一片海里。",
+  "你不必在意别人的评价，你的人生由你自己定义。",
+  "人生没有白吃的苦，每一次苦都是甜的铺垫。",
+  "你的坚持，不是为了感动谁，而是让你随时有能力跳出自己厌恶的圈子。",
+  "所有的美好，都藏在时间里。",
+  "你不必焦虑未来，你只需要过好当下。",
+  "愿你有高跟鞋也有跑鞋，喝茶也喝酒，对过往的一切情深意重，但从不回头。",
+  "人生最重要的不是你拥有了什么，而是你成为了谁。",
+  "你不必害怕孤独，因为孤独是成长的必修课。",
+  "所有的光芒，都需要时间才能被看到。",
+  "你的自信，是你最好的装饰。",
+  "不是所有的努力都会有结果，但所有的努力都不会白费。",
+  "你不必跟时间赛跑，你只需要与时间做朋友。",
+  "你的温柔，要有力量；你的善良，要有锋芒。",
+  "所有的付出，都会有回报，只是时间早晚的问题。",
+  "你不必羡慕别人的生活，因为你不知道别人背后经历了什么。",
+  "愿你有前进的动力，也有回头的勇气。",
+  "你不必追求完美，你只需要追求真实。",
+  "所有的成长，都是破茧成蝶的过程。",
+  "你的勇气，是你最大的武器。",
+  "不是所有的路都通向远方，但每一条路都值得走过。",
+  "你不必害怕失败，因为失败是成功的垫脚石。",
+  "愿你眼里有星辰大海，心里有春暖花开。",
+  "人生就像一杯茶，不会苦一辈子，但总会苦一阵子。",
+  "你不必跟命运抗争，你只需要与命运共舞。",
+  "所有的离别，都是为了更好的重逢。",
+  "你的坚强，不是天生的，而是生活逼出来的。",
+  "不是所有的故事都有结局，但每一个故事都有意义。",
+  "你不必急于长大，成长需要时间。",
+  "愿你的笑容，发自内心；愿你的眼泪，都是喜极而泣。",
+  "你不必追求别人的认可，你只需要活出自己的精彩。",
+  "所有的挫折，都是成长的催化剂。",
+  "你的独立思考，是你最宝贵的财富。",
+  "不是所有的付出都有回报，但不付出一定没有回报。",
+  "你不必害怕未知，因为未知意味着无限可能。",
+  "愿你的生活，既有烟火气息，也有星辰大海。",
+  "人生就像一条河，有时平静，有时汹涌，但都在向前。",
+  "你不必追求一帆风顺，因为逆境让人成长。",
+  "所有的相遇，都是久别重逢。",
+  "你的善良，要有底线；你的温柔，要有力量。",
+  "不是所有的坚持都有意义，但放弃一定没有。",
+  "你不必活在别人的期待里，你只需要活出自己。",
+  "愿你的努力，配得上你的梦想。",
+  "人生就像爬山，不在于速度，而在于坚持。",
+  "你不必跟别人比较，你只需要超越自己。",
+  "所有的低谷，都是为了攀登下一个高峰。",
+  "你的自律，是你通往自由的钥匙。",
+  "不是所有的等待都有结果，但等待本身就是一种力量。",
+  "你不必害怕改变，因为不变才是最大的风险。",
+  "愿你的心中有阳光，脚下有力量。",
+  "人生就像一场马拉松，不在于起跑，而在于坚持。",
+  "所有的失去，都是为了更好的得到。",
+  "你的梦想，值得你全力以赴。",
+  "不是所有的努力都能被看见，但所有看不见的努力都有意义。",
+  "你不必在意一时的得失，人生是一场长跑。",
+  "愿你有勇气开始，也有毅力坚持。",
+  "人生就像下棋，落子无悔。",
+  "所有的苦难，都是化了妆的祝福。",
+  "你的行动，是打败焦虑的最好办法。",
+  "不是所有的路都好走，但每一步都算数。",
+  "你不必追求别人的生活，你只需要过好自己的日子。",
+  "愿你的每一天，都比昨天更好一点。",
+  "你不必活在过去的阴影里，未来有无限可能。",
+  "所有的汗水，都会变成珍珠。",
+  "你的坚持，终将让不可能变成可能。",
+  "不是所有的成功都来得快，但迟到的好消息总比没有好。",
+  "你不必害怕重新开始，因为每一次开始都是新的机会。",
+  "愿你的心里有光，眼里有海。",
+  "人生就像一场梦，愿你梦醒时分，无怨无悔。",
+  "你不必羡慕别人的成功，你只需要走好自己的路。",
+  "所有的付出，终将以另一种方式回报你。",
+  "你的勇气，能改变你的人生。",
+  "你不必害怕犯错，因为错误是最好的老师。",
+  "愿你的眼里有星辰，心里有繁花。",
+  "人生就像一场冒险，勇敢者才能看到最美的风景。",
+  "你不必追求轰轰烈烈，平平淡淡才是真。",
+  "所有的等待，都是值得的。",
+  "你的自信，能征服世界。",
+  "不是所有的努力都能成功，但放弃一定失败。",
+  "你不必活在别人的光环下，你也有自己的光芒。",
+  "愿你的生活，如你所愿。",
+  "人生就像一面镜子，你对它笑，它就对你笑。",
+  "你不必害怕前路漫漫，只要方向对了，就不怕路远。",
+  "所有的坎坷，都是人生的风景。",
+  "你的坚持，会让你成为你想成为的人。",
+  "不是所有的故事都精彩，但每个故事都值得讲述。",
+  "你不必羡慕别人的天赋，努力也是一种天赋。",
+  "愿你的每一天，都充满阳光和希望。",
+  "人生就像一杯咖啡，苦涩中带着香醇。",
+  "你不必追求别人的认可，你只需要认可自己。",
+  "所有的伤痛，都会变成你的勋章。",
+  "你的梦想，只有你自己能实现。",
+  "你不必害怕失败，因为失败是成功之母。",
+  "愿你的笑容，永远真诚。",
+  "人生就像一本书，每一章都有不同的故事。",
+  "你不必活在别人的评价里，你只需要活出真实的自己。",
+  "所有的努力，都不会被辜负。",
+  "你的勇敢，会让你看到不一样的风景。",
+  "不是所有的坚持都能看到希望，但坚持本身就是希望。",
+  "你不必害怕孤独，因为孤独让人强大。",
+  "愿你的生活，简简单单，却充满温暖。",
+  "人生就像一条路，有时弯曲，有时笔直，但都通向远方。",
+  "你不必追求完美，因为完美不存在。",
+  "所有的低谷，都是蓄力的时刻。",
+  "你的努力，会照亮你前行的路。",
+  "不是所有的成功都来得容易，但容易的成功不值得骄傲。",
+  "你不必羡慕别人的人生，你也有自己的精彩。",
+  "愿你的心中，永远有一团火。",
+  "人生就像一场雨，有时大，有时小，但总会停。",
+  "你不必害怕改变，因为改变意味着新的开始。",
+  "你的坚强，会让你无所畏惧。",
+  "你不必活在过去的遗憾里，未来还有无限可能。",
+  "愿你的每一天，都活得有意义。",
+  "人生就像一首歌，有高潮，有低谷，但都值得聆听。",
+  "你不必追求别人的脚步，你只需要走好自己的节奏。",
+  "所有的努力，都是在为未来铺路。",
+  "你的自信，会让你闪闪发光。",
+  "不是所有的等待都有结果，但等待本身就是一种修行。",
+  "你不必害怕前方的路，因为路是走出来的。",
+  "愿你的生活，充满爱和希望。",
+  "人生就像一幅画，每一笔都是你自己画的。",
+  "你不必活在别人的期待里，你只需要活出自己的色彩。",
+  "所有的磨难，都是人生的财富。",
+  "你的勇气，会改变你的命运。",
+  "你不必追求别人的成功，你只需要定义自己的成功。",
+  "愿你的心中，永远有光。",
+  "你不必害怕失败，因为失败是成长的阶梯。",
+  "所有的付出，都会有回报，只是时间问题。",
+  "你的坚持，会让你看到最美的风景。",
+  "不是所有的路都平坦，但每一步都值得。",
+  "你不必羡慕别人的光环，你也有自己的光芒。",
+  "愿你的每一天，都比昨天更接近梦想。",
+  "你不必活在别人的阴影下，你也有自己的阳光。",
+  "所有的经历，都是人生的养分。",
+  "你的独立，是你最大的魅力。",
+  "不是所有的付出都能被珍惜，但付出本身就是一种美丽。",
+  "你不必害怕重新开始，因为每一次开始都是新的希望。",
+  "愿你的笑容，像阳光一样温暖。",
+  "你不必追求别人的生活，你只需要过好自己的每一天。",
+  "所有的伤痛，都会变成你的力量。",
+  "你的梦想，只有你自己能守护。",
+  "不是所有的努力都能成功，但努力本身就是一种成功。",
+  "愿你的生活，如诗如画。",
+  "人生就像一条河，有时平静，有时汹涌，但都在奔向大海。",
+  "你的勇气，是你最大的底气。",
+  "愿你的每一天，都充满感恩和喜悦。",
+  "人生就像一场戏，每一幕都值得认真演好。",
+  "你不必羡慕别人的人生，你也有自己的故事。",
+  "所有的努力，都是在为更好的自己铺路。",
+  "你的自律，会让你与众不同。",
+  "不是所有的付出都有回报，但付出的人无悔。",
+  "愿你的心里，永远有希望和勇气。",
+  "人生就像一杯茶，苦尽甘来。",
+  "你不必活在过去的遗憾里，珍惜当下，拥抱未来。",
+  "所有的坎坷，都是人生的风景线。",
+  "你的坚持，终将让你成为你想成为的人。",
+  "不是所有的路都好走，但走过的每一步都算数。",
+  "愿你的生活，简单而美好。",
+  "人生就像一场冒险，勇敢的人才能看到最美的风景。",
+  "你不必害怕前方的未知，因为未知意味着无限可能。",
+  "所有的努力，都不会被时光辜负。",
+  "你的自信，会让你散发光芒。",
+  "不是所有的等待都有结果，但等待让人沉淀和成长。",
+  "愿你的心中，永远有一团不灭的火。",
+  "人生就像一场雨，有时暴风骤雨，有时细雨绵绵，但终会迎来彩虹。",
+  "你不必害怕改变，因为改变意味着新的可能。",
+  "所有的经历，都是人生最宝贵的财富。",
+  "愿你的生活，如你所愿，如你所想。",
+  "不是所有的等待都有结果，但等待让人沉淀。",
+  "愿你的心里有光，脚下有路，前方有梦。",
+];
+function getDailySlogan() {
+  const day = Math.floor(Date.now() / 86400000);
+  return dailySlogans[day % dailySlogans.length];
+}
+function loadSlogan() {
+  const today = new Date().toDateString();
+  const data = DB.get('slogan', {date:'', text:''});
+  if (data.date === today && data.text) {
+    document.getElementById('sloganText').textContent = data.text;
+  } else {
+    // 新的一天，自动生成今日标语
+    const slogan = getDailySlogan();
+    DB.set('slogan', {date: today, text: slogan});
+    document.getElementById('sloganText').textContent = slogan;
+  }
+}
+loadSlogan();
+
+// ========== 开屏自动弹出今日励志短句 ==========
+function showSloganPopup() {
+  const slogan = document.getElementById('sloganText').textContent;
+  // 创建全屏弹出层
+  const overlay = document.createElement('div');
+  overlay.id = 'sloganPopup';
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:3000;
+    background:rgba(255,194,203,0.85);
+    backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;
+    padding:30px;
+    opacity:0;
+    transition:opacity 0.5s ease;
+  `;
+  overlay.innerHTML = `
+    <div style="
+      background:linear-gradient(135deg,#FFF5E8,#FFE4E9);
+      border-radius:28px;
+      padding:40px 30px;
+      max-width:380px;
+      width:100%;
+      text-align:center;
+      box-shadow:0 20px 60px rgba(200,160,165,0.3);
+      border:3px solid #FFC2CB;
+      transform:scale(0.6) rotate(-5deg);
+      transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    ">
+      <div style="font-size:48px;margin-bottom:16px;animation:float 2s ease-in-out infinite;">✨</div>
+      <div style="font-size:14px;color:#E88A9A;font-weight:700;letter-spacing:2px;margin-bottom:16px;">今日励志</div>
+      <div style="font-size:20px;font-weight:700;color:#6B545C;line-height:1.8;margin-bottom:24px;">${slogan}</div>
+      <button onclick="closeSloganPopup()" style="
+        background:linear-gradient(135deg,#FFC2CB,#E88A9A);
+        color:white;border:none;padding:12px 40px;
+        border-radius:25px;font-size:16px;font-weight:600;
+        box-shadow:0 4px 14px rgba(232,138,154,0.4);
+        cursor:pointer;
+      ">开始今天的学习 →</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  // 动画弹出
+  setTimeout(() => {
+    overlay.style.opacity = '1';
+    overlay.querySelector('div').style.transform = 'scale(1) rotate(0deg)';
+  }, 100);
+}
+function closeSloganPopup() {
+  const overlay = document.getElementById('sloganPopup');
+  if (overlay) {
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 500);
+  }
+}
+// 页面加载后延迟弹出
+window.addEventListener('load', () => {
+  setTimeout(showSloganPopup, 600);
+});
+
+// 换一句标语
+function changeSlogan() {
+  const today = new Date().toDateString();
+  const current = document.getElementById('sloganText').textContent;
+  let newSlogan;
+  do {
+    newSlogan = dailySlogans[Math.floor(Math.random() * dailySlogans.length)];
+  } while (newSlogan === current && dailySlogans.length > 1);
+  DB.set('slogan', {date: today, text: newSlogan});
+  document.getElementById('sloganText').textContent = newSlogan;
+  toast('已换一句 ✨');
 }
 
 // ========== 模态框 ==========
@@ -952,6 +1316,10 @@ function toggleDrawer() {
   document.getElementById('drawer').classList.toggle('open');
   document.getElementById('drawerOverlay').classList.toggle('open');
 }
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
 
 // 左滑手势
 let touchStartX = 0, touchStartY = 0;
@@ -975,7 +1343,7 @@ document.addEventListener('touchend', e => {
 
 // ========== 页面路由 ==========
 function openPage(name) {
-  toggleDrawer(); // 先关抽屉
+  closeDrawer(); // 先关抽屉（确保关闭，不会误开）
   const container = document.getElementById('pages-container');
   // 隐藏首页
   document.getElementById('page-home').classList.remove('active');
@@ -990,7 +1358,13 @@ function openPage(name) {
     const pageEl = pageFn();
     container.appendChild(pageEl);
     pageEl.classList.add('active');
-    window.scrollTo(0, 0);
+    // 确保页面从最顶部开始显示——滚动页面自身而非window
+    setTimeout(() => {
+      pageEl.scrollTop = 0;
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }, 10);
 
     // 页面加载后回调
     if (window['afterPage_' + name]) window['afterPage_' + name]();
@@ -1086,25 +1460,121 @@ function createRibbon(layer) {
   setTimeout(() => el.remove(), 3100);
 }
 
-function createFirework(layer) {
-  const cx = 20 + Math.random() * 60;
-  const cy = 20 + Math.random() * 40;
-  const colors = ['🎉','🎊','✨','⭐','🌟'];
-  for (let i = 0; i < 15; i++) {
-    const el = document.createElement('div');
-    el.textContent = colors[Math.floor(Math.random()*colors.length)];
-    const angle = (i / 15) * Math.PI * 2;
-    const dist = 80 + Math.random() * 60;
-    el.style.cssText = `position:absolute;font-size:24px;left:${cx}%;top:${cy}%;transition:all 1s ease-out;opacity:1;`;
-    layer.appendChild(el);
-    setTimeout(() => {
-      el.style.left = (cx + Math.cos(angle) * dist * 0.15) + '%';
-      el.style.top = (cy + Math.sin(angle) * dist * 0.2) + '%';
-      el.style.opacity = '0';
-      el.style.fontSize = '8px';
-    }, 10);
-    setTimeout(() => el.remove(), 1100);
+// ===== 动态烟花（Canvas 粒子动画）=====
+let fireworkCanvas = null;
+let fireworkCtx = null;
+let fireworkParticles = [];
+let fireworkAnimating = false;
+
+function getFireworkCanvas() {
+  if (fireworkCanvas) return fireworkCanvas;
+  fireworkCanvas = document.createElement('canvas');
+  fireworkCanvas.style.cssText = 'position:fixed;inset:0;z-index:2500;pointer-events:none;';
+  fireworkCanvas.width = window.innerWidth;
+  fireworkCanvas.height = window.innerHeight;
+  document.body.appendChild(fireworkCanvas);
+  fireworkCtx = fireworkCanvas.getContext('2d');
+  window.addEventListener('resize', () => {
+    if (fireworkCanvas) {
+      fireworkCanvas.width = window.innerWidth;
+      fireworkCanvas.height = window.innerHeight;
+    }
+  });
+  return fireworkCanvas;
+}
+
+function launchFireworkParticle(x, y) {
+  const colors = [
+    '255,100,150', '255,180,80', '100,200,255', '180,120,255',
+    '255,220,100', '120,255,180', '255,90,90', '80,180,255'
+  ];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const count = 40 + Math.floor(Math.random() * 20);
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+    const speed = 2 + Math.random() * 5;
+    fireworkParticles.push({
+      x: x, y: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1.0,
+      decay: 0.008 + Math.random() * 0.012,
+      color: color,
+      size: 2 + Math.random() * 3
+    });
   }
+}
+
+function animateFireworks() {
+  if (!fireworkCtx) return;
+  fireworkCtx.fillStyle = 'rgba(0,0,0,0.15)';
+  fireworkCtx.fillRect(0, 0, fireworkCanvas.width, fireworkCanvas.height);
+  
+  fireworkParticles = fireworkParticles.filter(p => p.life > 0);
+  
+  fireworkParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.05; // gravity
+    p.vx *= 0.99;
+    p.vy *= 0.99;
+    p.life -= p.decay;
+    
+    const alpha = Math.max(0, p.life);
+    fireworkCtx.beginPath();
+    fireworkCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+    fireworkCtx.fillStyle = `rgba(${p.color},${alpha})`;
+    fireworkCtx.fill();
+    
+    // glow effect
+    fireworkCtx.beginPath();
+    fireworkCtx.arc(p.x, p.y, p.size * p.life * 2, 0, Math.PI * 2);
+    fireworkCtx.fillStyle = `rgba(${p.color},${alpha * 0.2})`;
+    fireworkCtx.fill();
+  });
+  
+  if (fireworkParticles.length > 0 || fireworkAnimating) {
+    requestAnimationFrame(animateFireworks);
+  } else {
+    fireworkCtx.clearRect(0, 0, fireworkCanvas.width, fireworkCanvas.height);
+  }
+}
+
+// 烟花连放秀——专注结束时触发
+function triggerFireworkShow() {
+  const canvas = getFireworkCanvas();
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  fireworkParticles = [];
+  fireworkAnimating = true;
+  
+  // 连续发射多波烟花
+  const launchOne = () => {
+    const x = window.innerWidth * (0.2 + Math.random() * 0.6);
+    const y = window.innerHeight * (0.15 + Math.random() * 0.4);
+    launchFireworkParticle(x, y);
+  };
+  
+  // 第一波：3朵
+  launchOne();
+  setTimeout(launchOne, 100);
+  setTimeout(launchOne, 200);
+  // 第二波
+  setTimeout(launchOne, 600);
+  setTimeout(launchOne, 700);
+  // 第三波
+  setTimeout(launchOne, 1200);
+  setTimeout(launchOne, 1300);
+  setTimeout(launchOne, 1400);
+  // 大 finale
+  setTimeout(launchOne, 1900);
+  setTimeout(launchOne, 1950);
+  setTimeout(launchOne, 2000);
+  
+  // 启动动画
+  animateFireworks();
+  // 3秒后停止
+  setTimeout(() => { fireworkAnimating = false; }, 3000);
 }
 
 function triggerGrandEffect() {
@@ -1128,7 +1598,7 @@ console.log('瑾瑾的工作台 V1.0 已加载 💕');
 </script>
 
 <!-- 页面模块脚本 -->
-<script src="pages.js"></script>
+<script src="pages.js?v=20260728a"></script>
 
 </body>
 </html>

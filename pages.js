@@ -196,25 +196,43 @@ window.page_pomodoro = function() {
         <div class="tomato-circle" id="tomatoCircle">
           <div class="tomato-time" id="tomatoTime">25:00</div>
         </div>
-        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
           <button class="btn btn-sm btn-outline" onclick="setTomatoTime(15)">15分</button>
           <button class="btn btn-sm btn-outline" onclick="setTomatoTime(25)">25分</button>
           <button class="btn btn-sm btn-outline" onclick="setTomatoTime(45)">45分</button>
           <button class="btn btn-sm btn-outline" onclick="setTomatoTime(60)">60分</button>
         </div>
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;">
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+          <span style="font-size:14px;font-weight:600;color:var(--text-soft);">自定义时间：</span>
+          <input type="number" id="customMin" min="1" max="180" value="30" style="width:80px;padding:10px 12px;font-size:16px;text-align:center;border:2px solid var(--pink-main);border-radius:12px;background:#fff;-webkit-appearance:none;appearance:none;">
+          <span style="font-size:14px;color:var(--text-soft);">分钟</span>
+          <button class="btn btn-sm" onclick="setCustomTomato()" style="padding:10px 16px;">设置时间</button>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
           <button class="btn" id="tomatoStartBtn" onclick="toggleTomato()">开始专注</button>
           <button class="btn btn-outline" onclick="resetTomato()">重置</button>
         </div>
-        <div style="margin-top:14px;font-size:13px;color:var(--text-soft);">⏰ 专注结束后可打卡留存记录</div>
+        <div style="margin-top:14px;font-size:13px;color:var(--text-soft);">⏰ 专注结束后有音乐提示，可打卡留存记录</div>
       </div>
     </div>
+
+    <div class="card" style="border:2px solid var(--blue);">
+      <div class="card-title">⏱️ 自由正计时</div>
+      <div style="font-size:13px;color:var(--text-soft);margin-bottom:14px;">从 00:00 开始往上计时，不设目标，想专注多久就多久</div>
+      <div style="text-align:center;padding:20px;">
+        <div style="font-size:56px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;" id="freeTime">00:00:00</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:20px;">
+          <button class="btn" id="freeStartBtn" style="background:var(--blue);" onclick="toggleFreeTimer()">开始计时</button>
+          <button class="btn btn-outline" onclick="stopFreeTimer()">结束并打卡</button>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-title">📊 专注记录</div>
       <div id="tomatoRecords"></div>
       <button class="btn btn-gold btn-sm" style="width:100%;margin-top:10px;" onclick="saveTomatoRecord()">打卡本次专注</button>
     </div>
-    <div style="text-align:center;font-size:36px;">⏰</div>
   `;
   return div;
 };
@@ -223,13 +241,71 @@ window.afterPage_pomodoro = function() {
   window.tomatoSeconds = 25 * 60;
   window.tomatoRunning = false;
   window.tomatoTimer = null;
+  // 自由正计时初始化
+  window.freeSeconds = 0;
+  window.freeRunning = false;
+  window.freeTimer = null;
   renderTomatoRecords();
 };
+
+// ===== 自由正计时（从0开始往上数）=====
+function toggleFreeTimer() {
+  if (window.freeRunning) {
+    // 暂停
+    clearInterval(window.freeTimer);
+    window.freeRunning = false;
+    document.getElementById('freeStartBtn').textContent = '继续计时';
+  } else {
+    // 开始
+    getAudioCtx();
+    window.freeRunning = true;
+    document.getElementById('freeStartBtn').textContent = '暂停';
+    window.freeTimer = setInterval(() => {
+      window.freeSeconds++;
+      const h = Math.floor(window.freeSeconds / 3600);
+      const m = Math.floor((window.freeSeconds % 3600) / 60);
+      const s = window.freeSeconds % 60;
+      document.getElementById('freeTime').textContent =
+        `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }, 1000);
+  }
+}
+function stopFreeTimer() {
+  if (window.freeSeconds === 0) { toast('还没开始计时呢'); return; }
+  clearInterval(window.freeTimer);
+  window.freeRunning = false;
+  const totalMin = Math.max(1, Math.round(window.freeSeconds / 60));
+  // 保存记录
+  const records = DB.get('tomatoRecords', []);
+  records.unshift({
+    date: new Date().toLocaleString('zh-CN'),
+    minutes: totalMin
+  });
+  if (records.length > 200) records = records.slice(0, 200);
+  DB.set('tomatoRecords', records);
+  // 烟花+音乐+振动
+  triggerFireworkShow();
+  vibrateFinish();
+  playFinishMelody();
+  toast(`🎉 本次专注 ${totalMin} 分钟，已打卡！`);
+  // 重置
+  window.freeSeconds = 0;
+  document.getElementById('freeTime').textContent = '00:00:00';
+  document.getElementById('freeStartBtn').textContent = '开始计时';
+  renderTomatoRecords();
+}
 function setTomatoTime(min) {
   if (window.tomatoRunning) return;
   window.tomatoMinutes = min;
   window.tomatoSeconds = min * 60;
-  document.getElementById('tomatoTime').textContent = `${min}:00`;
+  document.getElementById('tomatoTime').textContent = `${String(min).padStart(2,'0')}:00`;
+}
+function setCustomTomato() {
+  if (window.tomatoRunning) { toast('请先暂停或重置'); return; }
+  const val = parseInt(document.getElementById('customMin').value);
+  if (!val || val < 1 || val > 180) { toast('请输入1-180之间的数字'); return; }
+  setTomatoTime(val);
+  toast(`已设置为 ${val} 分钟 🍅`);
 }
 function toggleTomato() {
   if (window.tomatoRunning) {
@@ -239,6 +315,7 @@ function toggleTomato() {
     document.getElementById('tomatoCircle').classList.remove('running');
   } else {
     window.tomatoRunning = true;
+    getAudioCtx(); // 用户点击时初始化音频，否则结束时播不出声音
     document.getElementById('tomatoStartBtn').textContent = '暂停';
     document.getElementById('tomatoCircle').classList.add('running');
     window.tomatoTimer = setInterval(() => {
@@ -251,19 +328,66 @@ function toggleTomato() {
         window.tomatoRunning = false;
         document.getElementById('tomatoCircle').classList.remove('running');
         document.getElementById('tomatoStartBtn').textContent = '开始专注';
-        triggerEffect(['star','koi']);
+        // 动态烟花连放
+        triggerFireworkShow();
         toast('🎉 专注完成！可以打卡了');
-        // 振动提醒
-        if (navigator.vibrate) navigator.vibrate([200,100,200]);
+        // 长振动提醒
+        vibrateFinish();
+        // 音乐提示
+        playFinishMelody();
       }
     }, 1000);
+  }
+}
+// 专注完成音乐提示（手机兼容版）
+window.audioCtx = null;
+function getAudioCtx() {
+  if (!window.audioCtx) {
+    try { window.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { return null; }
+  }
+  if (window.audioCtx.state === 'suspended') {
+    window.audioCtx.resume();
+  }
+  return window.audioCtx;
+}
+function playFinishMelody() {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const notes = [
+      {f:523, d:0.15}, {f:659, d:0.15}, {f:784, d:0.15},
+      {f:1047, d:0.3}, {f:784, d:0.15}, {f:1047, d:0.4},
+      {f:1319, d:0.6}
+    ];
+    let time = ctx.currentTime + 0.1;
+    notes.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = n.f;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.5, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + n.d);
+      osc.start(time);
+      osc.stop(time + n.d);
+      time += n.d;
+    });
+  } catch(e) { console.log('音频播放失败', e); }
+}
+// 长振动提醒
+function vibrateFinish() {
+  if (navigator.vibrate) {
+    navigator.vibrate([300,150,300,150,300,150,600]);
   }
 }
 function resetTomato() {
   clearInterval(window.tomatoTimer);
   window.tomatoRunning = false;
   window.tomatoSeconds = window.tomatoMinutes * 60;
-  document.getElementById('tomatoTime').textContent = `${window.tomatoMinutes}:00`;
+  const m = window.tomatoMinutes;
+  document.getElementById('tomatoTime').textContent = `${String(m).padStart(2,'0')}:00`;
   document.getElementById('tomatoStartBtn').textContent = '开始专注';
   document.getElementById('tomatoCircle').classList.remove('running');
 }
